@@ -5,13 +5,19 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     float inputX, inputY;
-    [SerializeField] float velocity, velocityMultiplier, velocityCap, deceleration;
+    [SerializeField] float velocity, acceleration, deceleration, velocityCap;
     [SerializeField] float jumpForce, jumpCountCurrent, jumpCountMax;
     [SerializeField] bool isGrounded;
     Rigidbody2D rb;
     CapsuleCollider2D cc;
+    
+    public bool IsGrounded
+    {
+        get{return isGrounded;}
+        set{isGrounded = value; if (value == true){jumpCountCurrent = 0;}
+    }}
 
-    void Start()
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         cc = GetComponent<CapsuleCollider2D>();
@@ -24,14 +30,14 @@ public class CharacterController : MonoBehaviour
         inputY = Input.GetAxisRaw("Vertical");
 
         // Increase velocity and incrememnt player x position by velocity
-        velocity += inputX * velocityMultiplier * Time.deltaTime;
+        velocity += inputX * acceleration * Time.deltaTime;
         velocity = Mathf.Clamp(velocity, -velocityCap, velocityCap);
         transform.position += new Vector3(velocity, 0, 0) * Time.deltaTime;
 
         // Decelerate player when no input
         if (inputX == 0)
         {
-            velocity = Mathf.Lerp(velocity, 0, deceleration) * Time.deltaTime;
+            velocity = Mathf.MoveTowards(velocity, 0, deceleration * Time.deltaTime);
         }
 
         if (Input.GetButtonDown("Jump")){Jump();}
@@ -39,10 +45,8 @@ public class CharacterController : MonoBehaviour
 
     void Jump()
     {
-        // TODO: Implement gravity manipulation, jump higher by holding button
-
-        // Check that jump counter is not capped
-        if (jumpCountCurrent >= jumpCountMax){return;}
+        // Check if player can jump
+        if (jumpCountCurrent >= jumpCountMax || !IsGrounded){return;}
 
         // Increment jump counter, jump
         jumpCountCurrent++;
