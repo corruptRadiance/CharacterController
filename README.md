@@ -1,2 +1,11 @@
-# CharacterController
-Basic velocity-based Character Controller script for future 2D game projects, made with Unity.
+# To Do:
+- Jump
+  - Gravity manipulation
+  - Longer button press = higher jump
+  
+- GroundCheck
+  - Ground check sphere on player
+  - Reset jump counter on grounded
+  
+ - Wall climb?
+ - Feature toggling
